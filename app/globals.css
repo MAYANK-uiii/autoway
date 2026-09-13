@@ -161,3 +161,37 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* AUTOWAY range slider */
+.autoway-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, #40e0d0, #7b61ff);
+  outline: none;
+}
+.autoway-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid #40e0d0;
+  box-shadow: 0 0 10px rgba(64, 224, 208, 0.6);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.autoway-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+.autoway-range::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid #40e0d0;
+  box-shadow: 0 0 10px rgba(64, 224, 208, 0.6);
+  cursor: pointer;
+}
