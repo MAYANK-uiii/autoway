@@ -49,14 +49,12 @@ export function SignUpModal({ open, onClose }: SignUpModalProps) {
     try {
       await signIn(email || "you@example.com", password || "autoway")
       setStatus("done")
+      // Redirect only after authentication has successfully completed.
+      onClose()
+      router.replace("/dashboard")
     } catch {
       setStatus("idle")
     }
-  }
-
-  const goToDashboard = () => {
-    onClose()
-    router.push("/dashboard")
   }
 
   return (
