@@ -1,7 +1,9 @@
 "use client"
 
 import { LayoutDashboard, Zap, Link2, Activity, Settings, Sun, Moon, LogOut } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/lib/auth-context"
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard },
@@ -19,6 +21,17 @@ interface SidebarProps {
 }
 
 export function Sidebar({ active, onNavigate, isDark, onToggleTheme }: SidebarProps) {
+  const router = useRouter()
+  const { user, signOut } = useAuth()
+
+  const handleSignOut = () => {
+    signOut()
+    router.replace("/login")
+  }
+
+  const displayName = user?.name ?? "AUTOWAY User"
+  const initials = displayName.slice(0, 2).toUpperCase()
+
   return (
     <aside
       className={cn(
@@ -101,11 +114,14 @@ export function Sidebar({ active, onNavigate, isDark, onToggleTheme }: SidebarPr
         )}
       >
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#40E0D0] to-[#7B61FF] text-sm font-bold text-black">
-          AV
+          {initials}
         </div>
         <div className="min-w-0 flex-1">
-          <p className={cn("truncate text-sm font-semibold", isDark ? "text-white" : "text-black")}>Alex Vega</p>
-          <button className="flex items-center gap-1 text-xs text-white/40 transition-colors hover:text-[#40E0D0]">
+          <p className={cn("truncate text-sm font-semibold", isDark ? "text-white" : "text-black")}>{displayName}</p>
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-1 text-xs text-white/40 transition-colors hover:text-[#40E0D0]"
+          >
             <LogOut className="h-3 w-3" />
             Sign Out
           </button>
