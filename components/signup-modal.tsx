@@ -3,7 +3,9 @@
 import type React from "react"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { X, Mail, Lock, Loader2, Check } from "lucide-react"
+import { useAuth } from "@/lib/auth-context"
 
 interface SignUpModalProps {
   open: boolean
@@ -11,6 +13,8 @@ interface SignUpModalProps {
 }
 
 export function SignUpModal({ open, onClose }: SignUpModalProps) {
+  const router = useRouter()
+  const { signIn } = useAuth()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle")
@@ -38,10 +42,21 @@ export function SignUpModal({ open, onClose }: SignUpModalProps) {
 
   if (!open) return null
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (status === "loading") return
     setStatus("loading")
-    setTimeout(() => setStatus("done"), 1200)
+    try {
+      await signIn(email || "you@example.com", password || "autoway")
+      setStatus("done")
+    } catch {
+      setStatus("idle")
+    }
+  }
+
+  const goToDashboard = () => {
+    onClose()
+    router.push("/dashboard")
   }
 
   return (
