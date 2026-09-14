@@ -8,6 +8,8 @@ import { useAuth } from "@/lib/auth-context"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { ConnectedAccounts } from "@/components/dashboard/connected-accounts"
 import { Automations } from "@/components/dashboard/automations"
+import { ActivityLogsPage } from "@/components/dashboard/activity-logs-page"
+import { SettingsPage } from "@/components/dashboard/settings-page"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -44,10 +46,14 @@ export default function DashboardPage() {
         onToggleTheme={() => setIsDark((v) => !v)}
       />
       <main className="flex flex-1 flex-col">
-        {active === "Automations" ? (
-          <Automations isDark={isDark} />
-        ) : (
+        {active === "Connected Accounts" ? (
           <ConnectedAccounts isDark={isDark} />
+        ) : active === "Activity Logs" ? (
+          <ActivityLogsPage isDark={isDark} />
+        ) : active === "Settings" ? (
+          <SettingsPage isDark={isDark} onToggleTheme={() => setIsDark((v) => !v)} />
+        ) : (
+          <Automations isDark={isDark} />
         )}
       </main>
     </div>
