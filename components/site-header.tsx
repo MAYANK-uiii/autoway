@@ -38,8 +38,8 @@ export function SiteHeader({ onGetStarted }: SiteHeaderProps) {
 
         <button
           onClick={onGetStarted}
-          className="relative rounded-xl px-4 py-2 text-sm font-semibold text-black transition-transform hover:scale-105"
-          style={{ background: "linear-gradient(135deg, #40E0D0, #7B61FF)" }}
+          className="autoway-gradient-animate relative rounded-xl px-4 py-2 text-sm font-semibold text-black shadow-[0_0_20px_-6px_rgba(64,224,208,0.7)] transition-all hover:scale-105 hover:shadow-[0_0_28px_-4px_rgba(123,97,255,0.8)]"
+          style={{ backgroundImage: "linear-gradient(135deg, #40E0D0, #7B61FF, #40E0D0)" }}
         >
           Get Started / Sign In
         </button>
