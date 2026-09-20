@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Heart, MessageCircle, Send, Bookmark, Sparkles, Play } from "lucide-react"
+import { Heart, MessageCircle, Send, Bookmark, Sparkles } from "lucide-react"
 
 interface HeroSectionProps {
   onStartTrial: () => void
@@ -56,10 +56,6 @@ export function HeroSection({ onStartTrial }: HeroSectionProps) {
               style={{ background: "linear-gradient(135deg, #40E0D0, #7B61FF)" }}
             >
               Start Free Trial
-            </button>
-            <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/10 sm:w-auto">
-              <Play className="h-4 w-4" />
-              Watch demo
             </button>
           </div>
 
