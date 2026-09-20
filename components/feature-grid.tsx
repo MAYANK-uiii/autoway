@@ -1,5 +1,8 @@
+"use client"
+
 import { MessageSquare, Mail } from "lucide-react"
-import type { ComponentType, SVGProps } from "react"
+import { useRef, type ComponentType, type SVGProps } from "react"
+import { Reveal } from "@/components/reveal"
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>
 
@@ -80,8 +83,10 @@ export function FeatureGrid() {
         </div>
 
         <div className="mt-16 grid gap-6 md:grid-cols-3">
-          {features.map((feature) => (
-            <FeatureCard key={feature.title} feature={feature} />
+          {features.map((feature, i) => (
+            <Reveal key={feature.title} delay={i * 120}>
+              <FeatureCard feature={feature} />
+            </Reveal>
           ))}
         </div>
       </div>
@@ -91,15 +96,36 @@ export function FeatureGrid() {
 
 function FeatureCard({ feature }: { feature: Feature }) {
   const Icon = feature.icon
+  const cardRef = useRef<HTMLDivElement | null>(null)
+
+  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const node = cardRef.current
+    if (!node) return
+    const rect = node.getBoundingClientRect()
+    node.style.setProperty("--mx", `${e.clientX - rect.left}px`)
+    node.style.setProperty("--my", `${e.clientY - rect.top}px`)
+  }
+
   return (
     <div
-      className="group relative rounded-2xl border border-white/10 bg-[#0a0a0a] p-7 transition-all duration-300 hover:-translate-y-1"
+      ref={cardRef}
+      onMouseMove={handleMove}
+      className="group relative h-full overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0a] p-7 transition-all duration-300 hover:-translate-y-1"
       style={
         {
           "--accent": feature.accent,
         } as React.CSSProperties
       }
     >
+      {/* cursor-following spotlight */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background: `radial-gradient(240px circle at var(--mx, 50%) var(--my, 0%), ${feature.accent}22, transparent 70%)`,
+        }}
+      />
+
       {/* neon border glow on hover */}
       <div
         aria-hidden="true"
@@ -110,7 +136,7 @@ function FeatureCard({ feature }: { feature: Feature }) {
       />
 
       <div
-        className="flex h-12 w-12 items-center justify-center rounded-xl"
+        className="relative flex h-12 w-12 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110"
         style={{
           background: `${feature.accent}1a`,
           border: `1px solid ${feature.accent}40`,

@@ -13,13 +13,25 @@ export function HeroSection({ onStartTrial }: HeroSectionProps) {
       {/* ambient glows */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-40 left-1/4 h-96 w-96 -translate-x-1/2 rounded-full opacity-30 blur-[120px]"
+        className="autoway-pulse-glow pointer-events-none absolute -top-40 left-1/4 h-96 w-96 -translate-x-1/2 rounded-full opacity-30 blur-[120px]"
         style={{ background: "#40E0D0" }}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-20 right-1/4 h-96 w-96 translate-x-1/2 rounded-full opacity-30 blur-[120px]"
-        style={{ background: "#7B61FF" }}
+        className="autoway-pulse-glow pointer-events-none absolute -top-20 right-1/4 h-96 w-96 translate-x-1/2 rounded-full opacity-30 blur-[120px]"
+        style={{ background: "#7B61FF", animationDelay: "2.5s" }}
+      />
+      {/* subtle grid */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+          maskImage: "radial-gradient(ellipse 70% 60% at 50% 0%, #000 40%, transparent 100%)",
+          WebkitMaskImage: "radial-gradient(ellipse 70% 60% at 50% 0%, #000 40%, transparent 100%)",
+        }}
       />
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-16 lg:grid-cols-2">
@@ -32,9 +44,9 @@ export function HeroSection({ onStartTrial }: HeroSectionProps) {
           <h1 className="mt-6 text-balance text-5xl font-bold leading-[1.05] tracking-tight md:text-6xl">
             Automate Your{" "}
             <span
-              className="text-transparent"
+              className="autoway-gradient-animate text-transparent"
               style={{
-                backgroundImage: "linear-gradient(135deg, #40E0D0, #7B61FF)",
+                backgroundImage: "linear-gradient(135deg, #40E0D0, #7B61FF, #40E0D0)",
                 backgroundClip: "text",
                 WebkitBackgroundClip: "text",
               }}
@@ -86,9 +98,23 @@ function SocialPreviewCard() {
     <div className="relative mx-auto w-full max-w-sm">
       <div
         aria-hidden="true"
-        className="absolute -inset-1 rounded-3xl opacity-40 blur-xl"
+        className="autoway-pulse-glow absolute -inset-1 rounded-3xl opacity-40 blur-xl"
         style={{ background: "linear-gradient(135deg, #40E0D0, #7B61FF)" }}
       />
+
+      {/* floating channel badges */}
+      <div className="autoway-float absolute -left-6 top-10 z-10 hidden rounded-2xl border border-white/10 bg-[#0a0a0a]/90 px-3 py-2 shadow-xl backdrop-blur sm:flex sm:items-center sm:gap-2">
+        <MessageCircle className="h-4 w-4 text-[#40E0D0]" />
+        <span className="text-xs font-medium text-white/80">DM auto-replied</span>
+      </div>
+      <div
+        className="autoway-float-slow absolute -right-4 bottom-24 z-10 hidden rounded-2xl border border-white/10 bg-[#0a0a0a]/90 px-3 py-2 shadow-xl backdrop-blur sm:flex sm:items-center sm:gap-2"
+        style={{ animationDelay: "1.2s" }}
+      >
+        <Send className="h-4 w-4 text-[#7B61FF]" />
+        <span className="text-xs font-medium text-white/80">Campaign sent</span>
+      </div>
+
       <div className="relative rounded-3xl border border-white/10 bg-[#0a0a0a] p-4 shadow-2xl">
         {/* card header */}
         <div className="flex items-center gap-3">
