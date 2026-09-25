@@ -9,8 +9,9 @@ export async function POST(req: Request) {
       content?: string
     }
 
-    const user = process.env.EMAIL_USER
-    const pass = process.env.EMAIL_PASS
+    const user = process.env.EMAIL_USER?.trim()
+    // Gmail App Passwords are shown with spaces (e.g. "abcd efgh ijkl mnop") but must be used without them
+    const pass = process.env.EMAIL_PASS?.replace(/\s+/g, "")
 
     if (!user || !pass) {
       return NextResponse.json(
