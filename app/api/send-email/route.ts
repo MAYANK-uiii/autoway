@@ -1,67 +1,53 @@
-import { Resend } from "resend"
+import { NextResponse } from "next/server"
+import nodemailer from "nodemailer"
 
-export const runtime = "nodejs"
-
-interface SendEmailBody {
-  recipients?: string
-  subject?: string
-  content?: string
-}
-
-function parseRecipients(raw: string): string[] {
-  return raw
-    .split(/[\n,;]+/)
-    .map((value) => value.trim())
-    .filter(Boolean)
-}
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-export async function POST(request: Request) {
-  const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) {
-    return Response.json(
-      { error: "Email is not configured. Add RESEND_API_KEY to your project." },
-      { status: 500 },
-    )
-  }
-
-  let body: SendEmailBody
+export async function POST(req: Request) {
   try {
-    body = (await request.json()) as SendEmailBody
-  } catch {
-    return Response.json({ error: "Invalid request body." }, { status: 400 })
+    const { recipients, subject, content } = (await req.json()) as {
+      recipients?: string
+      subject?: string
+      content?: string
+    }
+
+    const user = process.env.EMAIL_USER?.trim()
+    // Gmail App Passwords are shown with spaces (e.g. "abcd efgh ijkl mnop") but must be used without them
+    const pass = process.env.EMAIL_PASS?.replace(/\s+/g, "")
+
+    if (!user || !pass) {
+      return NextResponse.json(
+        { error: "Email is not configured. Add EMAIL_USER and EMAIL_PASS environment variables." },
+        { status: 500 },
+      )
+    }
+
+    const to = (recipients ?? "")
+      .split(",")
+      .map((email) => email.trim())
+      .filter(Boolean)
+
+    if (to.length === 0) {
+      return NextResponse.json({ error: "Add at least one recipient email address." }, { status: 400 })
+    }
+
+    if (!content?.trim()) {
+      return NextResponse.json({ error: "Email content cannot be empty." }, { status: 400 })
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: { user, pass },
+    })
+
+    await transporter.sendMail({
+      from: `AUTOWAY <${user}>`,
+      to,
+      subject: subject?.trim() || "A new update from AUTOWAY",
+      html: `<p>${content.replace(/\n/g, "<br/>")}</p>`,
+    })
+
+    return NextResponse.json({ success: true, delivered: to.length })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to send email"
+    return NextResponse.json({ error: message }, { status: 500 })
   }
-
-  const content = body.content?.trim()
-  if (!content) {
-    return Response.json({ error: "Email content is required." }, { status: 400 })
-  }
-
-  const recipients = parseRecipients(body.recipients ?? "")
-  if (recipients.length === 0) {
-    return Response.json({ error: "Add at least one recipient email address." }, { status: 400 })
-  }
-
-  const invalid = recipients.filter((email) => !EMAIL_PATTERN.test(email))
-  if (invalid.length > 0) {
-    return Response.json({ error: `Invalid email address: ${invalid.join(", ")}` }, { status: 400 })
-  }
-
-  const subject = body.subject?.trim() || "A new update from AUTOWAY"
-
-  const resend = new Resend(apiKey)
-
-  const { data, error } = await resend.emails.send({
-    from: "AUTOWAY <onboarding@resend.dev>",
-    to: recipients,
-    subject,
-    text: content,
-  })
-
-  if (error) {
-    return Response.json({ error: error.message || "Failed to send email." }, { status: 502 })
-  }
-
-  return Response.json({ id: data?.id, delivered: recipients.length })
 }

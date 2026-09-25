@@ -176,12 +176,29 @@ export function CreatePostModal({ open, onClose }: CreatePostModalProps) {
                   className="w-full rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white placeholder:text-white/30 outline-none transition-colors focus:border-[#40E0D0]/60"
                 />
               </div>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <button className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 py-2.5 text-sm text-white/40 transition-colors hover:border-[#40E0D0]/40 hover:text-white/70">
+                  <ImageIcon className="h-4 w-4" /> Add media
+                </button>
+                <button
+                  onClick={() => submit(false)}
+                  disabled={busy || !recipients.trim() || !subject.trim() || !text.trim()}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#40E0D0] to-[#7B61FF] px-5 py-2.5 text-sm font-semibold text-black shadow-[0_0_24px_rgba(64,224,208,0.35)] transition-all hover:shadow-[0_0_32px_rgba(123,97,255,0.5)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+                >
+                  <Send className="h-4 w-4" /> {busy ? "Sending..." : "Publish now"}
+                </button>
+              </div>
+              <p className="text-center text-xs text-white/30">
+                Publish is enabled once recipients, subject, and content are filled in.
+              </p>
             </div>
           )}
 
-          <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 py-4 text-sm text-white/40 transition-colors hover:border-[#40E0D0]/40 hover:text-white/70">
-            <ImageIcon className="h-4 w-4" /> Add media
-          </button>
+          {!emailSelected && (
+            <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 py-4 text-sm text-white/40 transition-colors hover:border-[#40E0D0]/40 hover:text-white/70">
+              <ImageIcon className="h-4 w-4" /> Add media
+            </button>
+          )}
         </div>
 
         <div className="relative flex flex-col-reverse gap-2 border-t border-white/10 px-6 py-4 sm:flex-row sm:justify-end">
