@@ -176,6 +176,16 @@ export function CreatePostModal({ open, onClose }: CreatePostModalProps) {
                   className="w-full rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white placeholder:text-white/30 outline-none transition-colors focus:border-[#40E0D0]/60"
                 />
               </div>
+              <button
+                onClick={() => submit(false)}
+                disabled={busy || !recipients.trim() || !subject.trim() || !text.trim()}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#40E0D0] to-[#7B61FF] px-5 py-2.5 text-sm font-semibold text-black shadow-[0_0_24px_rgba(64,224,208,0.35)] transition-all hover:shadow-[0_0_32px_rgba(123,97,255,0.5)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+              >
+                <Send className="h-4 w-4" /> {busy ? "Sending..." : "Publish email now"}
+              </button>
+              <p className="text-center text-xs text-white/30">
+                Enabled once recipients, subject, and content are filled in.
+              </p>
             </div>
           )}
 
