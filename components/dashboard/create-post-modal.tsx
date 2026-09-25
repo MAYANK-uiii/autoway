@@ -22,9 +22,13 @@ export function CreatePostModal({ open, onClose }: CreatePostModalProps) {
   const { notify } = useToast()
   const [selected, setSelected] = useState<string[]>(["instagram"])
   const [text, setText] = useState("")
+  const [subject, setSubject] = useState("")
+  const [recipients, setRecipients] = useState("")
   const [busy, setBusy] = useState(false)
 
   if (!open) return null
+
+  const emailSelected = selected.includes("email")
 
   const toggle = (key: string) =>
     setSelected((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]))
@@ -36,18 +40,48 @@ export function CreatePostModal({ open, onClose }: CreatePostModalProps) {
     notify("AI caption generated")
   }
 
-  const submit = (schedule: boolean) => {
+  const sendEmail = async () => {
+    const res = await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ recipients, subject, content: text }),
+    })
+    const data = (await res.json().catch(() => ({}))) as { error?: string; delivered?: number }
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to send email")
+    }
+    return data.delivered ?? 0
+  }
+
+  const submit = async (schedule: boolean) => {
     if (!text.trim() || selected.length === 0) {
       notify("Add content and pick at least one channel")
       return
     }
+    if (emailSelected && !recipients.trim()) {
+      notify("Add at least one recipient email address")
+      return
+    }
+
     setBusy(true)
-    setTimeout(() => {
-      setBusy(false)
+    try {
+      if (!schedule && emailSelected) {
+        const delivered = await sendEmail()
+        notify(`Email sent to ${delivered} recipient${delivered === 1 ? "" : "s"}`)
+      } else {
+        // Non-email channels have no backend yet, so simulate the publish.
+        await new Promise((resolve) => setTimeout(resolve, 700))
+        notify(schedule ? "Post scheduled successfully" : "Post published successfully")
+      }
       onClose()
       setText("")
-      notify(schedule ? "Post scheduled successfully" : "Post published successfully")
-    }, 900)
+      setSubject("")
+      setRecipients("")
+    } catch (err) {
+      notify(err instanceof Error ? err.message : "Something went wrong")
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -112,6 +146,38 @@ export function CreatePostModal({ open, onClose }: CreatePostModalProps) {
               className="w-full resize-none rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white placeholder:text-white/30 outline-none transition-colors focus:border-[#40E0D0]/60"
             />
           </div>
+
+          {emailSelected && (
+            <div className="space-y-4 rounded-xl border border-[#40E0D0]/20 bg-[#40E0D0]/5 p-4">
+              <div>
+                <label htmlFor="email-recipients" className="mb-2 block text-xs font-medium uppercase tracking-wide text-white/40">
+                  Recipients
+                </label>
+                <input
+                  id="email-recipients"
+                  type="text"
+                  value={recipients}
+                  onChange={(e) => setRecipients(e.target.value)}
+                  placeholder="jane@example.com, john@example.com"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white placeholder:text-white/30 outline-none transition-colors focus:border-[#40E0D0]/60"
+                />
+                <p className="mt-1.5 text-xs text-white/30">Separate multiple emails with commas.</p>
+              </div>
+              <div>
+                <label htmlFor="email-subject" className="mb-2 block text-xs font-medium uppercase tracking-wide text-white/40">
+                  Subject
+                </label>
+                <input
+                  id="email-subject"
+                  type="text"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="A new update from AUTOWAY"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white placeholder:text-white/30 outline-none transition-colors focus:border-[#40E0D0]/60"
+                />
+              </div>
+            </div>
+          )}
 
           <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 py-4 text-sm text-white/40 transition-colors hover:border-[#40E0D0]/40 hover:text-white/70">
             <ImageIcon className="h-4 w-4" /> Add media
